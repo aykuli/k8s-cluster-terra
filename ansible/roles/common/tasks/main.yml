@@ -1,3 +1,4 @@
+# @note Resource https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
 ---
 - name: Отключить swap
   command: swapoff -a
@@ -45,8 +46,8 @@
 - name: Включить SystemdCgroup
   replace:
     path: /etc/containerd/config.toml
-    regexp: 'SystemdCgroup = false'
-    replace: 'SystemdCgroup = true'
+    regexp: "SystemdCgroup = false"
+    replace: "SystemdCgroup = true"
   notify: restart containerd
 
 - name: Добавить ключ репозитория Kubernetes
@@ -86,10 +87,10 @@
     state: started
 
   handlers:
-  - name: reload sysctl
-    command: sysctl --system
-  - name: restart containerd
-    systemd:
-      name: containerd
-      state: restarted
-      daemon_reload: true
+    - name: reload sysctl
+      command: sysctl --system
+    - name: restart containerd
+      systemd:
+        name: containerd
+        state: restarted
+        daemon_reload: true

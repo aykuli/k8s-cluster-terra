@@ -8,17 +8,15 @@ k8s_cluster:
           ansible_host: ${yandex_compute_instance.master.network_interface.0.nat_ip_address}
           ansible_user: ${var.ssh_user}
           ansible_become: true
-%{ for vm in yandex_compute_instance.worker ~}
-${vm["name"]}:
     workers:
       hosts:
-        ${vm["hostname"]}:
-          ansible_host: ${vm.network_interface.0.nat_ip_address == "" ? vm.network_interface.0.ip_address : vm.network_interface.0.nat_ip_address}
+      %{ for vm in yandex_compute_instance.worker ~}
+       ${vm["hostname"]}:
+          ansible_host: ${vm.network_interface.0.nat_ip_address}
           ansible_user: ${var.ssh_user}
           ansible_become: true
-    %{ endfor ~}
+      %{ endfor ~}
   EOT
 
-  filename = "../${path.module}/ansible/inventory.yml"
+  filename = "../ansible/inventory.yml"
 }
-
