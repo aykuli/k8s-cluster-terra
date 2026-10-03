@@ -9,14 +9,21 @@ resource "yandex_iam_service_account" "diploma-sa" {
 # S3 / Object Storage
 resource "yandex_resourcemanager_folder_iam_member" "diploma_sa_storage" {
   folder_id = var.folder_id
-  role      = "storage.admin"
+  role      = "storage.editor"
+  member    = "serviceAccount:${yandex_iam_service_account.diploma-sa.id}"
+}
+
+# Сети и их обслуживание
+resource "yandex_resourcemanager_folder_iam_member" "diploma_sa_vpc" {
+  folder_id = var.folder_id
+  role      = "vpc.editor"
   member    = "serviceAccount:${yandex_iam_service_account.diploma-sa.id}"
 }
 
 # Виртуальные машины и их обслуживание
 resource "yandex_resourcemanager_folder_iam_member" "diploma_sa_compute" {
   folder_id = var.folder_id
-  role      = "compute.admin"
+  role      = "compute.editor"
   member    = "serviceAccount:${yandex_iam_service_account.diploma-sa.id}"
 }
 

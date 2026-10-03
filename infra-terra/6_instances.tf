@@ -1,25 +1,38 @@
 data "yandex_compute_image" "ubuntu" {
-  family = var.vms_resources.web.image_family
+  family = var.vm.image_family
 }
 
-resource "yandex_compute_instance" "bastion" {
-  name = var.vm.bastion.name
-  zone = var.vm.bastion.zone
+locals {
+  zones = keys(var.vpc_subnets)
+   common_metadata = {
+    "ssh-keys"  = "${var.ssh_user}:${var.ssh_public_key}"
+    "user-data" = file("${path.module}/cloud-init.yaml")
+  }
+}
+
+# ---------- ONE MASTER ----------
+resource "yandex_compute_instance" "master" {
+  name        = "${var.cluster_name}-master"
+  hostname    = "${var.cluster_name}-master"
+  platform_id = var.vm.platform_id
+  zone        = local.zone[0]
 
   network_interface {
     subnet_id          = yandex_vpc_subnet.ayn-subnet[var.vm.bastion.zone].id
-    nat                = true
     security_group_ids = [yandex_vpc_security_group.ayn-sg.id]
+    nat                = true
   }
   resources {
-    cores = 2
-    memory = 2
-    core_fraction = 20
+    cores         = var.vm.cores
+    memory        = var.vm.memory
+    core_fraction = var.vm.core_fraction
   }
 
   boot_disk {
     initialize_params {
       image_id  = data.yandex_compute_image.ubuntu.image_id
+      type      = var.vm.disk_type
+      size      = var.vm.disk_size
     }
   }
 
@@ -27,31 +40,41 @@ resource "yandex_compute_instance" "bastion" {
     preemptible = true
   }
 
-  metadata = {
-    ssh-keys = "${var.vm.user}:${file("~/.ssh/id_rsa.pub/")}"
+  metadata = local.ommon_metadata
+}
+output "master" {
+  value = {
+    name       = yandex_compute_instance.master.name
+    public_ip  = yandex_compute_instance.master.network_interface[0].nat_ip_address
+    private_ip = yandex_compute_instance.master.network_interface[0].ip_address
   }
 }
 
-resource "yandex_compute_instance" "private" {
+# ---------- 3 WORKER NODES in different zones ----------
+resource "yandex_compute_instance" "worker" {
   for_each = yandex_vpc_subnet.ayn-subnet
 
-  name = "private-${each.key}"
-  zone = each.value.zone
+  name        = "${var.cluster_name}-worker-${each.key}"
+  hostname    = "${var.cluster_name}-worker-${each.key}"
+  platform_id = var.vm.platform_id
+  zone        = each.value
 
   network_interface {
-    subnet_id          = each.value.id
-    nat                = false
-    security_group_ids = [yandex_vpc_security_group.ayn-private-sg.id]
+    subnet_id          = yandex_vpc_subnet["${var.cluster_name}-subnet-${each.key}"].id
+    security_group_ids = [yandex_vpc_security_group.ayn-sg.id]
+    nat                = true
   }
- resources {
-    cores = 2
-    memory = 2
-    core_fraction = 20
+  resources {
+    cores         = var.vm.cores
+    memory        = var.vm.memory
+    core_fraction = var.vm.core_fraction
   }
 
   boot_disk {
     initialize_params {
       image_id  = data.yandex_compute_image.ubuntu.image_id
+      type      = var.vm.disk_type
+      size      = var.vm.disk_size
     }
   }
 
@@ -59,7 +82,14 @@ resource "yandex_compute_instance" "private" {
     preemptible = true
   }
   
-  metadata = {
-    ssh-keys = "${var.vm.user}:${file("~/.ssh/id_rsa.pub/")}"
-  }
+  metadata = local.common_metadata
+}
+output "workers" {
+  value = [
+    for w in yandex_compute_instance.worker : {
+      name       = w.name
+      public_ip  = w.network_interface[0].nat_ip_address
+      private_ip = w.network_interface[0].ip_address
+    }
+  ]
 }

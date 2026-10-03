@@ -19,70 +19,68 @@ variable "default_zone" {
 }
 # -----------------------
 
-# --- SERVICE ACCOUNT ---
-variable "sa_name" {
-  type    = string
-  default = "diplomaSA"
-}
-# -----------------------
-
-# --- CONTAINER REGISTRY ---
-variable "container_registry_name" {
-  type = string
-  default = "ayn-registry"
-}
-# --------------------------
-
 # --- SECURITY GROUP -------
 variable "sg" {
   type = object({
-    name       = string
     admin_cidr = string
   })
 }
 variable "sg-private" {
   type = object({
-    name       = string
     admin_cidr = string
   })
 }
 # --------------------------
 
 # --- VPC ------------------
-variable "vpc" {
-  type = object({
-    network_name     = string
-    subnet_name      = string
-    gateway_name     = string
-    route_table_name = string
+variable "cluster_name" {
+  type = string
+  default = "ayn-cluster"
+}
+variable "vpc_subnets" {
     # map: зона доступности -> CIDR подсети
-    subnets = map(string)
-  })
+  type = map(string)
   default = {
-    network_name     = "ayn-netw"
-    subnet_name      = "ayn-subn"
-    gateway_name     = "ayn-gateway",
-    route_table_name = "ayn-rt"
-    subnets = {
-      "ru-central1-a" = "10.0.1.0/24"
-      "ru-central1-b" = "10.0.2.0/24"
-      "ru-central1-d" = "10.0.3.0/24"
-    }
+    "ru-central1-a" = "10.0.1.0/24"
+    "ru-central1-b" = "10.0.2.0/24"
+    "ru-central1-d" = "10.0.3.0/24"
   }
 }
 # -----------------------
 
-# --- INSTANCES----------
+# --- VMs ----------
+variable "ssh_user" {
+  type = string
+}
+variable "ssh_public_key" {
+  type = string
+}
+
 variable "vm" {
   type = object({
-    user     = string
-    keyh = string
-    bastion  = object({
-      name = string
-      zone = string
-    })
+    image_family  = string
+    platform_id   = string
+    name          = string
+    hostname      = string
+    disk_type     = string
+    disk_size     = number
+    preemptible   = bool
+    cores         = number
+    memory        = number
+    core_fraction = number
+    nat           = bool
   })
+  default = {
+    image_family  = "ubuntu-2204-lts"
+    platform_id   = "standard-v1"
+    disk_type     = "network-hdd"
+    disk_size     = 30
+    cores         = 2
+    memory        = 2
+    core_fraction = 20
+  }
 }
+
 # -----------------------
 
 

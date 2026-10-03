@@ -1,0 +1,15 @@
+k8s_cluster:
+  children:
+    master:
+      hosts:
+        master:
+          ansible_host: ""
+          ansible_user: ""
+    workers:
+      hosts:
+        worker01:
+          ansible_host: ""
+          ansible_user: ""
+        worker02:
+          ansible_host: ""
+          ansible_user: ""

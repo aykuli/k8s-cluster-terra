@@ -1,20 +1,25 @@
 # Диплом Айнур Шауэрман в профессии DEVOPS
 
-Шаги работы:
-## 1. Создание первичных необходимых сущностей
+## 1. Создание облачной инфраструктуры
 
-1) Собраны в папке [init-s3-service-account-and-registry](./init-s3-service-account-and-registry/)
+### 1.1. Создание первичных необходимых сущностей
+
+Для S3-бэкенда Terraform нужен 
+  
+  * статический ключ доступа (access key + secret key) сервисного аккаунта.
+  * созданное хранилище
+
+Создание этих первичных сущностей находит в папке [init-service-account-registry-storage/](./init-service-account-registry-storage/)
+
+Создаются:
 
 1) Сервисные аккаунты
 
-  * [diploma-sa](./init-s3-service-account-and-registry/1_service-account.tf#L2)
-    с правами, котрые понадобятся в дальнейшем:
-      * [`storage.admin`](./init-s3-service-account-and-registry/1_service-account.tf#L10)
-      * [`compute.admin`](./init-s3-service-account-and-registry/1_service-account.tf#L17)
+  * [diploma-sa](./init-s3-service-account-and-registry/1_service-account.tf#L2) с правами, котрые понадобятся в дальнейшем для обслуживания инфрастуктуры
     
     с ключами для работы с backend S3 bucket:
       * [static-key](./init-s3-service-account-and-registry/1_service-account.tf#L23)
-      * эти ключи я создавала для s3, так как для создания `s3` необхоlимы эти ключи
+
 
   * [github-action-sa](./init-s3-service-account-and-registry/3_container-registry.tf#L6)
     c правами пушить изоражения с `github actions` и затем пользоваться в Кубере:
@@ -27,6 +32,42 @@
 Запустила `terraform apply`:
 
 ![](./assets/1.png)
+
+Тут необходимо скопировать созданные секреты. Сделала командами:
+
+```shell
+$ terraform output -json github_actions_secrets > github_actions_secrets.json
+$ terraform output -raw s3_access_key > s3_access_key.txt
+$ terraform output -raw s3_secret_key > s3_secret_key.txt
+
+$ export YC_BUCKET_ACCESS_KEY="<access_key>"
+$ export YC_BUCKET_SECRET_KEY="<secret_key>"
+```
+
+### 1.2. Создание инфрастукртуры для мастер и воркер нод Кубернетиса
+
+```
+[localhost] ──kubectl──► [Мастер API: публичный IP :443/:6443]
+                              │
+                              ▼ (внутренняя сеть VPC)
+                        [Воркер-1] [Воркер-2] [Воркер-3]
+                              │
+                              └──► интернет (тянуть образы)
+```
+
+Инфраструктра создаётся через терраформ, описанный в [infra-terra/](./infra-terra/)
+
+```shell
+$ cd infra-terra
+$ terraform init \
+  -backend-config="access_key=$YC_BUCKET_ACCESS_KEY" \
+  -backend-config="secret_key=$YC_BUCKET_SECRET_KEY"
+```
+
+## 2. Создание Kubernetes кластера
+
+## 3. Создание тестового приложения
+
 
 Скопировала полученные данные в репозиторий приложения:
 

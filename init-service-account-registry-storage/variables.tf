@@ -33,3 +33,18 @@ variable "container_registry_name" {
 }
 # --------------------------
 
+# --- STORAGE --------------
+variable "bucket" {
+  type = object({
+    name = string
+    size = number
+  })
+  default = {
+    name = "diploma-tfstate"
+    size = 1024
+  }
+}
+# --------------------------
+
+
+

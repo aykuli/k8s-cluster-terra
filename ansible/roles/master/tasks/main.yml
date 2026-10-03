@@ -1,0 +1,46 @@
+---
+- name: Проверка инициализции кластера
+  stat:
+    path: /etc/kubernetes/admin.conf
+  register: kubeadm_init
+
+- name: Инициализировать кластер
+  command: >
+    kubeadm init
+    --pod-network-cidr={{ pod_cidr }}
+    --service-cidr={{ service_cidr }}
+    --apiserver-cert-extra-sans={{ ansible_host }}
+  when: not kubeadm_init.stat.exists
+
+- name: Создать каталог .kube
+  file:
+    path: "/home/{{ ansible_user }}/.kube"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0755"
+
+- name: Скопировать admin.conf
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: "/home/{{ ansible_user }}/.kube/config"
+    remote_src: true
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0600"
+
+- name: Установить CNI (Flannel)
+  become: true
+  become_user: "{{ ansible_user }}"
+  command: kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
+  environment:
+    KUBECONFIG: "/home/{{ ansible_user }}/.kube/config"
+
+- name: Сгенерировать команду join
+  command: kubeadm token create --print-join-command
+  register: join_command
+  changed_when: false
+
+- name: Сохранить join-команду в факт
+  set_fact:
+    kubeadm_join_command: "{{ join_command.stdout }}"

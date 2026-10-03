@@ -10,7 +10,7 @@ resource "yandex_iam_service_account" "github-action-sa" {
   expires_at  =  "2027-01-01T15:04:05Z"
 }
 
-resource "yandex_container_registry_iam_binding" "pusher" {
+resource "yandex_container_registry_iam_binding" "cr_support" {
   registry_id = yandex_container_registry.ayn_registry.id
   role        = "container-registry.admin"
   members     = ["serviceAccount:${yandex_iam_service_account.github-action-sa.id}"]

@@ -8,7 +8,6 @@ terraform {
   required_version = ">= 1.3.0"
 }
 
-
 provider "yandex" {
   cloud_id                 = var.cloud_id
   zone                     = var.default_zone
