@@ -66,10 +66,14 @@ $ terraform init \
 
 ## 2. Создание Kubernetes кластера
 
+В отличие от Yandex Managed Kubernetes, здесь нет автоматической подстановки IAM-токена в поды — её нужно делать вручную через imagePullSecrets.
+
 ## 3. Создание тестового приложения
 
 
-Скопировала полученные данные в репозиторий приложения:
+Скопировала полученные данные в `github_actions_secrets.json` и ID container registry в репозиторий приложения:
+
+![](./assets/3.png)
 
 * [https://github.com/aykuli/simple-app](https://github.com/aykuli/simple-app)
 
@@ -77,15 +81,16 @@ $ terraform init \
 
 
 
-3) Создала приложение и экшн к нему
+3) Создала приложение и экшн к нему [deploy.yml](https://github.com/aykuli/simple-app/blob/master/.github/workflows/deploy.yml)
 
 4) Задеплоила в `container registry YC`
+![](./assets/2.png)
 
 5) Результат создания Хранилища и Сохраения в Хранилище Образ приложения ниже:
 
-![](./assets/2.png)
-![](./assets/3.png)
 ![](./assets/4.png)
 ![](./assets/5.png)
 ![](./assets/6.png)
 ![](./assets/7.png)
+
+

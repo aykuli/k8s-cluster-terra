@@ -40,7 +40,8 @@ resource "yandex_compute_instance" "master" {
     preemptible = true
   }
 
-  metadata = local.ommon_metadata
+  service_account_id = var.service_account_image_puller_id
+  metadata = local.common_metadata
 }
 output "master" {
   value = {
@@ -82,6 +83,7 @@ resource "yandex_compute_instance" "worker" {
     preemptible = true
   }
   
+  service_account_id = var.service_account_image_puller_id
   metadata = local.common_metadata
 }
 output "workers" {

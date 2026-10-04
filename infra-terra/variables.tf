@@ -32,6 +32,13 @@ variable "sg-private" {
 }
 # --------------------------
 
+# --- CONTAINER REGISTRY ---
+variable "service_account_image_puller_id" {
+  type = string
+}
+# --------------------------
+
+
 # --- VPC ------------------
 variable "cluster_name" {
   type = string
@@ -73,11 +80,15 @@ variable "vm" {
   default = {
     image_family  = "ubuntu-2204-lts"
     platform_id   = "standard-v1"
+    name          = "aynur"
+    hostname      = "aynur"
     disk_type     = "network-hdd"
     disk_size     = 30
     cores         = 2
     memory        = 2
     core_fraction = 20
+    nat           = true
+    preemptible   = true
   }
 }
 

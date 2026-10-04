@@ -1,0 +1,30 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rollings
+  namespace: aynur
+  labels:
+    aynur: diploma
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 100%
+      maxUnavailable: 20%
+  selector:
+    matchLabels:
+      aynur: diploma
+  template:
+    metadata:
+      labels:
+        aynur: diploma
+    spec:
+      containers:
+        - name: aynapp
+          image: cr.yandex/crpcf4v28s6c08rdgrdk/simple-app:latest
+          ports:
+            - containerPort: 80
+      imagePullSecrets:
+        - name: cr-yandex-secret

@@ -6,3 +6,14 @@ users:
     sudo: ["ALL=(ALL) NOPASSWD:ALL"]
     ssh_authorized_keys:
       - ${ssh_public_key}
+runcmd:
+  # 1. Установка Docker (если еще не установлен)
+  - apt-get update && apt-get install -y docker.io
+
+  # 2. Установка Yandex Cloud CLI
+  - curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
+  - ln -s /opt/yacli/bin/yc /usr/local/bin/yc
+
+  # 3. Настройка Docker-хелпера авторизации для root-пользователя
+  # Эта команда пропишет в ~/.docker/config.json правила для домена cr.yandex
+  - yc container registry configure-docker --profile default
