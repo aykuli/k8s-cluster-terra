@@ -4,47 +4,66 @@
 
 ### 1.1. Создание первичных необходимых сущностей
 
-Для S3-бэкенда Terraform нужен 
-  
-  * статический ключ доступа (access key + secret key) сервисного аккаунта.
-  * созданное хранилище
-
 Создание этих первичных сущностей находит в папке [init-service-account-registry-storage/](./init-service-account-registry-storage/)
 
 Создаются:
 
-1) Сервисные аккаунты
+1) Сервисные аккаунты для 
 
-  * [diploma-sa](./init-s3-service-account-and-registry/1_service-account.tf#L2) с правами, котрые понадобятся в дальнейшем для обслуживания инфрастуктуры
+  * [diploma-sa](./init-service-account-registry-storage/1_service-account.tf#L2) с правами, котрые понадобятся в дальнейшем для обслуживания инфрастуктуры
     
     с ключами для работы с backend S3 bucket:
-      * [static-key](./init-s3-service-account-and-registry/1_service-account.tf#L23)
+      * [static-key](./init-service-account-registry-storage/1_service-account.tf#L30)
+      * [diploma_sa_key](./init-service-account-registry-storage/1_service-account.tf#L55)
 
 
-  * [github-action-sa](./init-s3-service-account-and-registry/3_container-registry.tf#L6)
-    c правами пушить изоражения с `github actions` и затем пользоваться в Кубере:
+  * [registry_sa](./init-service-account-registry-storage/3_container-registry.tf#L6)
+    c правами пушить изображения с поомщью ci/cd в container registry YC  и затем пулить докер изображения в Кубере:
 
-      * [container-registry.admin](./init-s3-service-account-and-registry/3_container-registry.tf#L13)
-    с ключами, котрые я скопировала в `github action secrets` для автоматического деплоя:
-      * [service_account_key](./init-s3-service-account-and-registry/3_container-registry.tf#L19)
-      *
+      * [container-registry.admin](./init-service-account-registry-storage/3_container-registry.tf#L13)
+    
+    с ключами для автоматического деплоя:
+      * [registry_sa_key](./init-service-account-registry-storage/3_container-registry.tf#L19)
+      
 
 Запустила `terraform apply`:
 
-![](./assets/1.png)
+![](./assets/0.png)
 
-Тут необходимо скопировать созданные секреты. Сделала командами:
+Тут необходимо скопировать созданные секреты. Сделала командами (с некоторыми запинками, что обычно думаю не только для меня):
 
 ```shell
-$ terraform output -json github_actions_secrets > github_actions_secrets.json
-$ terraform output -raw s3_access_key > s3_access_key.txt
-$ terraform output -raw s3_secret_key > s3_secret_key.txt
-
-$ export YC_BUCKET_ACCESS_KEY="<access_key>"
-$ export YC_BUCKET_SECRET_KEY="<secret_key>"
+$ terraform output -json registry_secrets > registy_sa_auth_key.json
+$ export YC_BUCKET_SECRET_KEY=$(terraform output -no-color -raw s3_secret_key)
+$ export YC_BUCKET_ACCESS_KEY=$(terraform output -no-color -raw s3_access_key)
+$ source ~/.bashrc
 ```
 
+Затем добавляю создание `auth_key.json` для сервисного акааунта `diploma-sa`, ведь это нужно для создания виртуальных машин.
+
+![](./assets/6.png)
+
+Этот ключ скопирую в папку с проектом создания виртуальных машин для Кубернетис кластера.
+
+Смотрю результаты.
+
+* Аккаунты для работы:
+
+![](./assets/1.png)
+![](./assets/7.png)
+![](./assets/10.png)
+
+* Реестр (пока пустой):
+
+![](./assets/4.png)
+![](./assets/11.png)
+
+* Хранилище (пока пустой):
+
+![](./assets/5.png)
+
 ### 1.2. Создание инфрастукртуры для мастер и воркер нод Кубернетиса
+
 
 ```
 [localhost] ──kubectl──► [Мастер API: публичный IP :443/:6443]
@@ -55,7 +74,9 @@ $ export YC_BUCKET_SECRET_KEY="<secret_key>"
                               └──► интернет (тянуть образы)
 ```
 
-Сделаю, как в инстуркции от ЯО: [https://yandex.cloud/ru/docs/tutorials/infrastructure-management/terraform-state-storage#create-service-account](https://yandex.cloud/ru/docs/tutorials/infrastructure-management/terraform-state-storage#create-service-account)
+Создаю профиль, который соотвествует сервисному аккунту `diploma-sa`[1]
+
+![](./assets/12.png)
 
 Инфраструктра создаётся через терраформ, описанный в [infra-terra/](./infra-terra/)
 
@@ -65,6 +86,9 @@ $ terraform init \
   -backend-config="access_key=$YC_BUCKET_ACCESS_KEY" \
   -backend-config="secret_key=$YC_BUCKET_SECRET_KEY"
 ```
+
+![](./assets/13.png)
+
 
 ## 2. Создание Kubernetes кластера
 
@@ -95,4 +119,8 @@ $ terraform init \
 ![](./assets/6.png)
 ![](./assets/7.png)
 
+
+## Список литературы
+
+1. [Создание профиля сервисного аккаунта](https://yandex.cloud/ru/docs/tutorials/infrastructure-management/terraform-state-storage#create-service-account)
 

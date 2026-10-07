@@ -41,7 +41,7 @@ variable "bucket" {
   })
   default = {
     name = "diploma-tfstate"
-    size = 1024
+    size = 524288000 # bytes
   }
 }
 # --------------------------

@@ -3,8 +3,8 @@ resource "yandex_storage_bucket" "tf_state" {
   folder_id = var.folder_id
   max_size  = var.bucket.size
 
-  access_key = yandex_iam_service_account_static_access_key.diploma-sa-static-key.access_key
-  secret_key = yandex_iam_service_account_static_access_key.diploma-sa-static-key.secret_key
+  access_key = yandex_iam_service_account_static_access_key.diploma_sa_static_key.access_key
+  secret_key = yandex_iam_service_account_static_access_key.diploma_sa_static_key.secret_key
   
   versioning { enabled = true }
 }

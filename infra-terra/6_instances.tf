@@ -10,7 +10,7 @@ locals {
   }
 }
 
-# ---------- ONE MASTER ----------
+# ---------- МАСТЕР ВМ ----------
 resource "yandex_compute_instance" "master" {
   name        = "${var.cluster_name}-master"
   hostname    = "${var.cluster_name}-master"
@@ -51,7 +51,7 @@ output "master" {
   }
 }
 
-# ---------- 3 WORKER NODES in different zones ----------
+# ---------- 3 ВОРКЕР ВМ-ы в разных зонах Яндекс облака ----------
 resource "yandex_compute_instance" "worker" {
   for_each = yandex_vpc_subnet.ayn-subnet
 
@@ -61,7 +61,7 @@ resource "yandex_compute_instance" "worker" {
   zone        = each.key
 
   network_interface {
-    subnet_id          = each.key
+    subnet_id          = each.value.id
     security_group_ids = [yandex_vpc_security_group.ayn-sg.id]
     nat                = true
   }
