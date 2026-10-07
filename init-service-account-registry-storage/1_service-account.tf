@@ -1,4 +1,4 @@
-# --- SERVICE ACCOUNT FOR ??TODO find put ---
+# --- SERVICE ACCOUNT -------------------------------
 resource "yandex_iam_service_account" "diploma-sa" {
   name        = var.sa_name
   description = "Service account for diploma work"
@@ -16,7 +16,7 @@ resource "yandex_resourcemanager_folder_iam_member" "diploma_sa_storage" {
 # Сети и их обслуживание
 resource "yandex_resourcemanager_folder_iam_member" "diploma_sa_vpc" {
   folder_id = var.folder_id
-  role      = "vpc.editor"
+  role      = "vpc.admin"
   member    = "serviceAccount:${yandex_iam_service_account.diploma-sa.id}"
 }
 

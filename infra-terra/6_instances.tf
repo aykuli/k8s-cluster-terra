@@ -15,10 +15,10 @@ resource "yandex_compute_instance" "master" {
   name        = "${var.cluster_name}-master"
   hostname    = "${var.cluster_name}-master"
   platform_id = var.vm.platform_id
-  zone        = local.zone[0]
+  zone        = local.zones[0]
 
   network_interface {
-    subnet_id          = yandex_vpc_subnet.ayn-subnet[var.vm.bastion.zone].id
+    subnet_id          = yandex_vpc_subnet.ayn-subnet[local.zones[0]].id
     security_group_ids = [yandex_vpc_security_group.ayn-sg.id]
     nat                = true
   }
@@ -58,10 +58,10 @@ resource "yandex_compute_instance" "worker" {
   name        = "${var.cluster_name}-worker-${each.key}"
   hostname    = "${var.cluster_name}-worker-${each.key}"
   platform_id = var.vm.platform_id
-  zone        = each.value
+  zone        = each.key
 
   network_interface {
-    subnet_id          = yandex_vpc_subnet["${var.cluster_name}-subnet-${each.key}"].id
+    subnet_id          = each.key
     security_group_ids = [yandex_vpc_security_group.ayn-sg.id]
     nat                = true
   }

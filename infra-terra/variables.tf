@@ -25,11 +25,6 @@ variable "sg" {
     admin_cidr = string
   })
 }
-variable "sg-private" {
-  type = object({
-    admin_cidr = string
-  })
-}
 # --------------------------
 
 # --- CONTAINER REGISTRY ---

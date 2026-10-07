@@ -4,7 +4,7 @@ k8s_cluster:
   children:
     master:
       hosts:
-        ${yandex_compute_instance.master["hostname"]}:
+        ${yandex_compute_instance.master.hostname}:
           ansible_host: ${yandex_compute_instance.master.network_interface.0.nat_ip_address}
           ansible_user: ${var.ssh_user}
           ansible_become: true

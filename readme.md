@@ -55,6 +55,8 @@ $ export YC_BUCKET_SECRET_KEY="<secret_key>"
                               └──► интернет (тянуть образы)
 ```
 
+Сделаю, как в инстуркции от ЯО: [https://yandex.cloud/ru/docs/tutorials/infrastructure-management/terraform-state-storage#create-service-account](https://yandex.cloud/ru/docs/tutorials/infrastructure-management/terraform-state-storage#create-service-account)
+
 Инфраструктра создаётся через терраформ, описанный в [infra-terra/](./infra-terra/)
 
 ```shell
