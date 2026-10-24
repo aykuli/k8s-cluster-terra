@@ -22,7 +22,7 @@ variable "default_zone" {
 # --- SERVICE ACCOUNT ---
 variable "sa_name" {
   type    = string
-  default = "diploma-sa"
+  default = "diploma_sa"
 }
 # -----------------------
 

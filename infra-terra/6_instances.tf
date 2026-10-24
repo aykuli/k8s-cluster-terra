@@ -5,8 +5,11 @@ data "yandex_compute_image" "ubuntu" {
 locals {
   zones = keys(var.vpc_subnets)
    common_metadata = {
-    "ssh-keys"  = "${var.ssh_user}:${var.ssh_public_key}"
-    "user-data" = file("${path.module}/cloud-init.yaml")
+    ssh-keys  = "${var.ssh_user}:${var.ssh_public_key}"
+    user-data = templatefile("./cloud-init.yaml", {
+      ssh_user       = var.ssh_user,
+      ssh_public_key = var.ssh_public_key,
+    })
   }
 }
 
@@ -36,9 +39,8 @@ resource "yandex_compute_instance" "master" {
     }
   }
 
-  scheduling_policy {
-    preemptible = true
-  }
+  scheduling_policy { preemptible = true }
+  allow_stopping_for_update = true
 
   service_account_id = var.service_account_image_puller_id
   metadata = local.common_metadata
@@ -79,9 +81,8 @@ resource "yandex_compute_instance" "worker" {
     }
   }
 
-  scheduling_policy {
-    preemptible = true
-  }
+  scheduling_policy { preemptible = true }
+  allow_stopping_for_update = true
   
   service_account_id = var.service_account_image_puller_id
   metadata = local.common_metadata

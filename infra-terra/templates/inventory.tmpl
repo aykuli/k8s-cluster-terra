@@ -1,0 +1,16 @@
+k8s_cluster:
+  children:
+    master:
+      hosts:
+        ${master_hostname}:
+          ansible_host: ${master_ip}
+          ansible_user: ${ansible_user}
+          ansible_become: true
+    workers:
+      hosts:
+      %{ for vm in workers ~}
+        ${vm.hostname}:
+          ansible_host: ${vm.ip}
+          ansible_user: ${ansible_user}
+          ansible_become: true
+      %{ endfor ~}

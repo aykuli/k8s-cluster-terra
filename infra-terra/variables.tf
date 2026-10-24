@@ -44,8 +44,8 @@ variable "vpc_subnets" {
   type = map(string)
   default = {
     "ru-central1-a" = "10.0.1.0/24"
-    "ru-central1-b" = "10.0.2.0/24"
     "ru-central1-d" = "10.0.3.0/24"
+    "ru-central1-e" = "10.0.4.0/24"
   }
 }
 # -----------------------
@@ -74,7 +74,7 @@ variable "vm" {
   })
   default = {
     image_family  = "ubuntu-2204-lts"
-    platform_id   = "standard-v1"
+    platform_id   = "standard-v3"
     name          = "aynur"
     hostname      = "aynur"
     disk_type     = "network-hdd"

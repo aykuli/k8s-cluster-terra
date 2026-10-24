@@ -14,3 +14,24 @@ terraform {
 
   required_version = ">= 1.3.0"
 }
+
+# terraform {
+#   backend "s3" {
+#     bucket       = "terraform-state-myproject"
+#     key          = "terraform/state.tfstate"
+#     region       = "ru-central-1"
+#     endpoint     = "https://s3.cloud.ru"
+#     access_key   = "ваш-tenant_id:ваш-key_id"
+#     secret_key   = "ваш-secret"
+#     skip_credentials_validation = true
+#     skip_metadata_api_check     = true
+#     skip_requesting_account_id  = true
+#   }
+
+#   required_providers {
+#     cloudru = {
+#       source  = "cloud.ru/cloudru/cloud"
+#       version = ">= 2.0.0"
+#     }
+#   }
+# }
