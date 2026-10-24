@@ -56,3 +56,4 @@ authorized_key.json
 *.txt
 github_actions_secrets.json
 *.auto.tfvars
+*secrets*.json
