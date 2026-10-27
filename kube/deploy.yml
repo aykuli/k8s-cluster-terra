@@ -23,8 +23,8 @@ spec:
     spec:
       containers:
         - name: aynapp
-          image: cr.yandex/crpcf4v28s6c08rdgrdk/simple-app:latest
+          image: ayn-registry.cr.cloud.ru/simple-app:latest
           ports:
             - containerPort: 80
       imagePullSecrets:
-        - name: cr-yandex-secret
+        - name: diploma-secret

@@ -4,7 +4,7 @@ metadata:
   name: aynapp-service
   namespace: aynur
 spec:
-  type: ClusterIP
+  type: NodePort
   selector:
     aynur: diploma
   ports:
@@ -12,3 +12,4 @@ spec:
       protocol: TCP
       port: 80
       targetPort: 80
+      nodePort: 32000
