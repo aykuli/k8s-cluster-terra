@@ -1,0 +1,17 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: aynapp-route
+  namespace: aynur
+spec:
+  parentRefs:
+    - name: cloud-gateway
+      namespace: aynur
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: / # Перенаправлять весь входящий трафик
+      backendRefs:
+        - name: aynapp-service
+          port: 80

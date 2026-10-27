@@ -1,4 +1,3 @@
-# ClusterIP — доступ только через Ingress (nginx-ingress слушает порт 80 на ноде)
 apiVersion: v1
 kind: Service
 metadata:
@@ -9,24 +8,7 @@ spec:
   selector:
     aynur: diploma
   ports:
-    - name: http
-      protocol: TCP
-      port: 80
-      targetPort: 80
----
-# LoadBalancer — доступ по внешнему IP облачного балансировщика: http://<lb-ip>
-# Если LoadBalancer недоступен, этот сервис будет в статусе Pending
-apiVersion: v1
-kind: Service
-metadata:
-  name: aynapp-lb
-  namespace: aynur
-spec:
-  type: LoadBalancer
-  selector:
-    aynur: diploma
-  ports:
-    - name: http
+    - name: backend
       protocol: TCP
       port: 80
       targetPort: 80
