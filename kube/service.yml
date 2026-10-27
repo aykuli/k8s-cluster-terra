@@ -15,7 +15,7 @@ spec:
       protocol: TCP
       port: 80
       targetPort: 80
-      nodePort: 30080
+      nodePort: 30081
 ---
 # LoadBalancer — доступ по внешнему IP облачного балансировщика: http://<lb-ip>
 # Если LoadBalancer недоступен, этот сервис будет в статусе Pending
