@@ -3,4 +3,4 @@ kind: GatewayClass
 metadata:
   name: traefik
 spec:
-  controllerName: traefik.io/gateway-api-controller # Исправленное имя для Traefik v3
+  controllerName: traefik.io/gateway-controller # Исправленное имя для Traefik v3
