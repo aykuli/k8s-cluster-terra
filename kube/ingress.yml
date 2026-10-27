@@ -1,0 +1,21 @@
+---
+# Ingress для простого приложения
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: aynapp-ingress
+  namespace: aynur
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: aynapp-service
+                port:
+                  number: 80
