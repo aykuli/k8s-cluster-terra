@@ -9,7 +9,7 @@ resource "cloudru_evolution_obs_bucket" "tf_state" {
 
   tags = [
     { key = "purpose", value = "terraform-state" },
-    { key = "owner",   value = "terraform-sa" }
+    { key = "owner",   value = "diploma_sa" }
   ]
   quota         = var.bucket.size
   quota_unit    =  var.bucket.unit

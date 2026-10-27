@@ -10,6 +10,13 @@
     regexp: '^([^#].*\sswap\s.*)$'
     replace: '# \1'
 
+- name: Сохранить модули ядра для автозагрузки
+  copy:
+    dest: /etc/modules-load.d/k8s.conf
+    content: |
+      overlay
+      br_netfilter
+
 - name: Загрузить модули ядра
   modprobe:
     name: "{{ item }}"
@@ -38,6 +45,12 @@
     state: present
     update_cache: true
 
+- name: Создать директорию для конфига containerd
+  file:
+    path: /etc/containerd
+    state: directory
+    mode: '0755'
+
 - name: Сгенерировать конфиг containerd
   shell: containerd config default > /etc/containerd/config.toml
   args:
@@ -50,9 +63,14 @@
     replace: "SystemdCgroup = true"
   notify: restart containerd
 
+- name: Создать директорию для ключей apt
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
 - name: Добавить ключ репозитория Kubernetes
   shell: |
-    mkdir -p /etc/apt/keyrings
     curl -fsSL https://pkgs.k8s.io/core:/stable:/v{{ k8s_version }}/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
   args:
     creates: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
@@ -85,12 +103,3 @@
     name: kubelet
     enabled: true
     state: started
-
-  handlers:
-    - name: reload sysctl
-      command: sysctl --system
-    - name: restart containerd
-      systemd:
-        name: containerd
-        state: restarted
-        daemon_reload: true

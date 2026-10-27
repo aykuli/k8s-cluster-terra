@@ -13,12 +13,19 @@ resource "cloudru_evolution_iam_access_key" "diploma_sa_static_key" {
   description        = "Static access key для хранилища tfstate terraform проекта с k8s кластером (Cloud.ru)"
   ttl                = "0"  # 0 — бессрочный ключ; можно указать "24h", "7d" и т.д.
 }
+
+data "cloudru_evolution_iam_api_key_product_collection" "products" {}
 resource "cloudru_evolution_iam_api_key" "diploma_sa_key" {
   name               = "diploma-sa-api-key"
   description        = "Авторизованный ключ для проекта кластера Kubernetes (Cloud.ru)"
   service_account_id = cloudru_evolution_iam_service_account.diploma_sa.id
-  product_codes      = []
   enabled            = true
+
+  # Обязательный параметр: коды продуктов
+  product_codes = [
+    for p in data.cloudru_evolution_iam_api_key_product_collection.products.products :
+    p.code if p.name != ""  # отфильтруйте нужные по имени
+  ]
 }
 
 

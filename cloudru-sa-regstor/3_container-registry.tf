@@ -25,7 +25,7 @@ resource "cloudru_evolution_artifact_registry_registry" "diploma-registry" {
     on            = "LAST_PULLED_AT"
     only_untagged = false
   }
-    timeouts {
+  timeouts {
     create = "60m"
     update = "30m"
     delete = "20m"
@@ -89,7 +89,7 @@ resource "cloudru_evolution_iam_service_account" "vm" {
 resource "cloudru_evolution_iam_access_key" "vm" {
   service_account_id = cloudru_evolution_iam_service_account.vm.id
   description        = "Ключ для ВМ"
-  ttl                = "0"
+  ttl                = 365
 }
 
 # Роль ar.registry.viewer — только pull
@@ -113,12 +113,14 @@ output "ci_cd_key_id" {
   value       = cloudru_evolution_iam_access_key.ci_cd.key_id
   description = "Key ID для CI/CD (GitHub Actions)"
 }
+# 4bc74ee768814c29fe6519b41ad5c54c
 
 output "ci_cd_key_secret" {
   value       = cloudru_evolution_iam_access_key.ci_cd.secret
   description = "Key Secret для CI/CD (GitHub Actions)"
   sensitive   = true
 }
+# 4c92c1a970cc093644c16df8169e5dd7
 
 # ВМ аккаунт
 output "vm_key_id" {

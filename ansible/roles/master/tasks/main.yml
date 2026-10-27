@@ -29,6 +29,18 @@
     group: "{{ ansible_user }}"
     mode: "0600"
 
+- name: Скачать манифест Flannel
+  get_url:
+    url: https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
+    dest: /tmp/kube-flannel.yml
+    mode: "0644"
+
+- name: Адаптировать Network CIDR во Flannel под настройки кластера
+  replace:
+    path: /tmp/kube-flannel.yml
+    regexp: "10.244.0.0/16"
+    replace: "{{ pod_cidr }}"
+
 - name: Установить CNI (Flannel)
   become: true
   become_user: "{{ ansible_user }}"
@@ -41,6 +53,9 @@
   register: join_command
   changed_when: false
 
-- name: Сохранить join-команду в факт
+- name: Распределить join-команду на весь кластер
   set_fact:
     kubeadm_join_command: "{{ join_command.stdout }}"
+  delegate_to: "{{ item }}"
+  delegate_facts: true
+  loop: "{{ groups['k8s_cluster'] }}"

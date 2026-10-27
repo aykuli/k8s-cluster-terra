@@ -1,0 +1,15 @@
+[all]
+{{ .master_hostname }} ansible_host={{ .master_ip }} ansible_user={{ .ansible_user }} server_role=master
+
+[workers]
+{{- range $w := .workers }}
+{{ $w.hostname }} ansible_host={{ $w.ip }} ansible_user={{ $.ansible_user }} server_role=worker
+{{- end }}
+
+[master]
+{{ .master_hostname }}
+
+[workers_group]
+{{- range $w := .workers }}
+{{ $w.hostname }}
+{{- end }}

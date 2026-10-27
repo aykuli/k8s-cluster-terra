@@ -1,0 +1,14 @@
+#cloud-config
+users:
+  - name: ${ssh_user}
+    groups: sudo
+    shell: /bin/bash
+    sudo: ["ALL=(ALL) NOPASSWD:ALL"]
+    ssh_authorized_keys:
+      - ${ssh_public_key}
+    # Сгенерируйте пароль командой
+    # Linux: mkpasswd -m sha-512 "YourPassword123!"
+    passwd: ${password}
+    lock_passwd: false
+hostname: ${vm_name}
+manage_etc_hosts: true

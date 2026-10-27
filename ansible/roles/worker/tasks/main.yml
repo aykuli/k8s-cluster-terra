@@ -4,6 +4,10 @@
     path: /etc/kubernetes/kubelet.conf
   register: kubelet_conf
 
+- name: Включить форвардинг пакетов перед join
+  command: sysctl -w net.ipv4.ip_forward=1
+  changed_when: false
+
 - name: Присоединить воркер к кластеру
-  command: "{{ hostvars[groups['master'][0]].kubeadm_join_command }}"
+  command: "{{ kubeadm_join_command }}"
   when: not kubelet_conf.stat.exists
