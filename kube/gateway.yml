@@ -4,11 +4,11 @@ metadata:
   name: cloud-gateway
   namespace: aynur
 spec:
-  gatewayClassName: eg # Имя класса Envoy Gateway (создается при его установке в кластер)
+  gatewayClassName: traefik # Указываем класс Traefi
   listeners:
     - name: http
       protocol: HTTP
       port: 80
       allowedRoutes:
         namespaces:
-          from: Same # Разрешаем маршруты только из этого же namespace
+          from: Same

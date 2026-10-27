@@ -11,7 +11,7 @@ spec:
     - matches:
         - path:
             type: PathPrefix
-            value: / # Перенаправлять весь входящий трафик
+            value: /
       backendRefs:
         - name: aynapp-service
           port: 80
