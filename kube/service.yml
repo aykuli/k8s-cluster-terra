@@ -1,13 +1,11 @@
-# NodePort — доступ с ноды: http://<node-ip>:<nodeport>
-# Kubernetes автоматически назначит порт в диапазоне 30000-32767
-# Узнать назначенный порт: kubectl get svc -n aynur
+# ClusterIP — доступ только через Ingress (nginx-ingress слушает порт 80 на ноде)
 apiVersion: v1
 kind: Service
 metadata:
   name: aynapp-service
   namespace: aynur
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     aynur: diploma
   ports:
@@ -15,7 +13,6 @@ spec:
       protocol: TCP
       port: 80
       targetPort: 80
-      nodePort: 30081
 ---
 # LoadBalancer — доступ по внешнему IP облачного балансировщика: http://<lb-ip>
 # Если LoadBalancer недоступен, этот сервис будет в статусе Pending

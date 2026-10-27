@@ -52,10 +52,16 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+          securityContext:
+            privileged: true
+            capabilities:
+              add:
+                - NET_BIND_SERVICE
           ports:
             - name: http
               containerPort: 80
               protocol: TCP
+              hostPort: 80
             - name: https
               containerPort: 443
               protocol: TCP
@@ -80,7 +86,7 @@ spec:
             successThreshold: 1
             failureThreshold: 3
 ---
-# Service контроллера — NodePort, чтобы был доступен с ноды
+# Service контроллера — ClusterIP для внутренней маршрутизации
 apiVersion: v1
 kind: Service
 metadata:
@@ -90,7 +96,7 @@ metadata:
     app.kubernetes.io/instance: ingress-nginx
     app.kubernetes.io/name: ingress-nginx
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app.kubernetes.io/instance: ingress-nginx
     app.kubernetes.io/name: ingress-nginx
@@ -98,8 +104,4 @@ spec:
     - name: http
       port: 80
       protocol: TCP
-      nodePort: 30080
-    - name: https
-      port: 443
-      protocol: TCP
-      nodePort: 30443
+      targetPort: 80
