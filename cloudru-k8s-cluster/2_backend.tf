@@ -5,7 +5,7 @@ terraform {
     bucket     = "diploma-tfstate-cloudru"
     key        = "k8s-cluster/terraform.tfstate"
 
-    region                      = "ru-1"
+    region                      = "ru-central-1"
     skip_region_validation      = true
     skip_credentials_validation = true
     skip_requesting_account_id  = true

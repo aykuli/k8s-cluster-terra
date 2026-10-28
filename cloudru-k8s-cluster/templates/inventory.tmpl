@@ -1,15 +1,18 @@
-[all]
-{{ .master_hostname }} ansible_host={{ .master_ip }} ansible_user={{ .ansible_user }} server_role=master
-
-[workers]
-{{- range $w := .workers }}
-{{ $w.hostname }} ansible_host={{ $w.ip }} ansible_user={{ $.ansible_user }} server_role=worker
-{{- end }}
-
-[master]
-{{ .master_hostname }}
-
-[workers_group]
-{{- range $w := .workers }}
-{{ $w.hostname }}
-{{- end }}
+all:
+  children:
+    k8s_cluster:
+      children:
+        master:
+          hosts:
+            master1:
+              ansible_host: {{ .master_ip }}
+              ansible_user: aynur
+              ansible_become: true
+        workers:
+          hosts:
+          {{- range $w := .workers }}
+            {{ $w.hostname }}:
+              ansible_host: {{ $w.ip }}
+              ansible_user: aynur
+              ansible_become: true
+          {{- end }}
